@@ -171,4 +171,3 @@ plot_points(points)
 # 3. Solve the problem 
 print "Minimum distance between two points is %s" % closest(points, len(points))
 
-pause(30)
