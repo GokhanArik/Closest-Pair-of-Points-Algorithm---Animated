@@ -2,10 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 from matplotlib.pyplot import pause
+import sys
+import random
 
 plt.ion()
 colors = []
 p = None 
+pt = 4 
 
 def plot_points(points):
     global colors
@@ -62,7 +65,8 @@ def closest_pair(X, Y, n):
 
     # Draw vertical line in the middle
     draw_line(X[mid][0])
-    pause(4)
+    global pt
+    pause(pt)
 
     print "Middle:", X[mid]
     
@@ -92,7 +96,7 @@ def closest_pair(X, Y, n):
 # Utility function to calculate min distance between points in strip  
 def strip_closest(strip, d):
     min_d = d
-
+    global n
     for i,(x,y) in enumerate(strip):
         for j in range(i+1, len(strip)):
             if (strip[j][1] - strip[i][1]) < min_d and distance(strip[i], strip[j]) < min_d:
@@ -111,6 +115,9 @@ def sort_y(tuples):
 def brute_force(X, n):
     global p
     min_d = distance(X[0], X[1])
+    P1_min = X[0]
+    P2_min = X[1]
+
     points = p.get_offsets().tolist()
 
     for i,(x,y) in enumerate(X):
@@ -119,15 +126,17 @@ def brute_force(X, n):
                 min_d = distance(X[i], X[j])  
                 colors[points.index([X[j][0],X[j][1]])]=0.5
                 colors[points.index([x,y])]=0.5
-                plt.text(x+1, y+1, min_d, ha='left', rotation=15)
-                draw_line_points(X[i], X[j])
+                P1_min = X[i]
+                P2_min = X[j]
             else:
                 colors[points.index([X[0][0],X[0][1]])]=0.5
                 colors[points.index([X[1][0],X[1][1]])]=0.5
-                draw_line_points(X[0],X[1])
-                plt.text(X[0][0]+1, X[0][1]+1, min_d, ha='left', rotation=15)
- 
-    pause(4)   
+
+    draw_line_points(P1_min, P2_min) 
+    plt.text(P1_min[0]+1, P1_min[1]+1, "{0:.2f}".format(min_d), ha='left', rotation=random.randint(-60,60))
+    
+    global pt    
+    pause(pt)   
     
     A=[]
     B=[]
@@ -160,14 +169,33 @@ def draw_line_points(a,b):
 
     line, = plt.plot(x,y,linewidth=1)
 
+def gen_points(r):
+    a=[]
+    
+    for i in range(1,r):
+        a.append( (random.randint(1, r), random.randint(1, r)) )
+    return a
+
 ########## Start Program ########
 
 # 1. Create a list of points
-points = [(2,3), (12,30),(25,30), (9,2), (13,10), (3,4), (5,6), (18,9), (27,13), (32,13)]
+if sys.argv[1] is "1":
+    points = [(2,3), (10, 1), (3, 25), (23,15), 
+         (18,3), (8,9), (12,30), (25,30), 
+         (9,2), (13,10), (3,4), (5,6), 
+         (22,32), (5,32), (23,9), (19,25),
+         (14,1), (11,25), (26,26), (12,9),
+         (18,9), (27,13), (32,13)] 
 
+elif sys.argv[1] is "2":
+    points = [(2,3), (12,30),(25,30), (9,2), (13,10), (3,4), (5,6), (18,9), (27,13), (32,13)]
+else:
+    points = gen_points( int(sys.argv[1]) )
+
+print points
 # 2. Draw points on graph
 plot_points(points)
 
 # 3. Solve the problem 
 print "Minimum distance between two points is %s" % closest(points, len(points))
-
+pause(30)
